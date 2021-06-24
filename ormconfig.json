@@ -1,0 +1,25 @@
+{
+   "type": "mysql",
+   "host": "rockwars-mysql",
+   "port": 3306,
+   "database": "rockwars",
+   "username": "root",
+   "password": "root",
+   "synchronize": true,
+   "logging": false,
+   "cache": true,
+   "entities": [
+      "./src/database/entities/*.entity.{ts,js}"
+   ],
+   "migrations": [
+      "./src/database/migrations/*.{ts,js}"
+   ],
+   "subscribers": [
+      "./src/database/subscribers/*.{ts,js}"
+   ],
+   "cli": {
+      "entitiesDir": "src/database/entities",
+      "migrationsDir": "src/database/migration",
+      "subscribersDir": "src/database/subscriber"
+   }
+}

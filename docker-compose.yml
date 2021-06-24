@@ -1,0 +1,66 @@
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+
+  mysql:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    container_name: rockwars-mysql
+    volumes:
+      - ./data/mysql5:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: rockwars
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    ports:
+      - 3308:3306
+
+  redis:
+    image: redis:alpine
+    container_name: rockwars-redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+     - 6380:6379
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: rockwars-app
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/build
+      - ./.env:/app/.env
+      - ./package.json:/app/package.json
+    restart: always
+    environment:
+      - NODE_ENV=development
+      - SET_CONTAINER_TIMEZONE=true
+      - CONTAINER_TIMEZONE=UTC
+      - TZ=UTC
+    ports:
+      - 8089:3000
+    depends_on:
+      # - mongo
+      - mysql
+    links:
+      - redis
+      # - mongo
+      - mysql
+  # mongo:
+  #     image: mongo:4.2
+  #     container_name: rockwars-mongo
+  #     hostname: rockwars-mongo
+  #     environment:
+  #       #   MONGO_INITDB_ROOT_USERNAME: root
+  #       #   MONGO_INITDB_ROOT_PASSWORD: root
+  #       - MONGO_INITDB_DATABASE=rockwars
+  #     volumes:
+  #       - ./docker-utils/mongo-init.js:/docker-entrypoint-initdb.d/001_users.js:ro
+  #       - ./data/mongo:/data/db
+  #     ports:
+  #       - 27018:27017
+  #     restart: always

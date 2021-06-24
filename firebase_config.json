@@ -1,0 +1,12 @@
+{
+    "type": "service_account",
+    "project_id": "rockwars-dev",
+    "private_key_id": "689433d5a7ac315decae6a96d0478ab0d680b37e",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDQrwwvSIfiPNg+\nV7bUO9gaY7tymnW0b6LwtSXnQ0y6ON9cIAZIdf31K/kDGpR1TDRqDKh9zpfbVXvZ\nJ4RGidyAp0lsk+VRhNhcCjrB6ai60QFhUHbjCmZzGCIHSUP/tDN8cna/7KQP4nAV\nzvUocChH3544AJqWk50Pc0jkri2siK3lcnw359erFDHS7m3iVTTSQAEC1S0fvrbG\nkEMxYjvQGNYeDf+y2mXDm6wNocmBdCK7PUOlyjgkp9JWjAf0mX/N+d5VN2760snE\nCCdbZDMV8Y/wMrx18brFViBQN83GbdGJ7HrbsWjQuLnseXC990FQbipBNIt3DSED\nVuI4zfgfAgMBAAECggEAJrI277Oi4txGevT35Y39ShNxSFSE/ALxc3Ibx7Dukt+F\n54bWs2wRvfs77wvoOIH7fCjBu6Zp+VV2JDPULuJUfZTHpDcegEnCdvq8n4WM8Ktd\n9qYdjYc5rSDt+mznC4zmOS7ef0NJvtpNz3Vzd16o0X8RTzApej+AEcPeYe08cfAG\nfZmuQkTFQFh5u0NwUId7gVYBJm1Wm1y1M/dChi2fqwKIntGNHif0p6U/6tc0X7WB\nzkXljBn6Z6QjP0yhuNIqCgnHLLThQD66WnGgBruhj09pSSVQfTa5VvXgkKj40Bsg\nqTnOz6RelpMXk3WR4LbPC6Vq1QnJfFZgmuxnGUj9DQKBgQDzW1YilM2DV77OXgU7\ne68V4KsUQ55qRhFEjWuaJ6aw5HrsSoLdrPwlJUKsI7Pf1I8tCtJMtK49WUpDGqHZ\nFvETFZELPogxOZX95V+drZZ44mVq7l2kM+swVwcF+nYcmjWxQYlhAxriuK3pK1gn\nEHXfyjg8f+Zs8Cg7SPGb+aUIHQKBgQDbho69TLZMgfqFMuM+g65+ZVZOuX6tr4dz\n9RzQRif94hn6BLUAjkmgvSXJra3ZA6fZGODEcpP9inuBs2FnTTlOdI+aFdnufieK\nASSq6bYAVH6jtIT6tnjJ/hZ9DDc6cfq0IosakujdTokENMRGphuAi1n489FpBdwK\nXYx3blWkawKBgDvNYTBkUtCI+omqDy0b6t28dS4oo8BH8axf+GZMgikMLKzubpRd\nEyVpr6WvrF8/0+NkumNBL2RCEf7Fh6paeemPrjIOLtex6AsZl9KeutCACh4p73cP\njyc067PrZaUHvFQP39uoMK4wZgRbs3D+GYliH0m2wIBaz/gpp74Fril9AoGBALKY\nqCwt6uoXnP8cxXAopZ/DRhJKK1uWwHaAZe60BPkyJ7wWdEN9fz08ZS/NEvDJXpbq\n/IIWTXwqXAzLKWVnmEXR4rqTKHg1PmmyQGikNyPRmi4JQV7PcTm0dAtMEuqDrFk8\n+TqnZrgVmrdHTp/DqABOXuaBRk9RKxFrxkmsBBT9AoGAd15/oP3QMyqL+5SXO53/\nMP9AlUAuCLqzNsSKPcx2cFNimCeGYeAgepSS/a1I83Tu+ETFN7Rhouvp+ErBe1sa\nC111DS/JAGhwSPLuE+u6GhysKqtBdbXRrhNRwWpCyZRdKhAYcTngXk9YCfjYVkGE\nLafbEuvsWAOV1JAv8t5TIfQ=\n-----END PRIVATE KEY-----\n",
+    "client_email": "firebase-adminsdk-wj5od@rockwars-dev.iam.gserviceaccount.com",
+    "client_id": "100394631646380669555",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-wj5od%40rockwars-dev.iam.gserviceaccount.com"
+}
