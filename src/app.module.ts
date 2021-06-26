@@ -1,3 +1,4 @@
+import { PostModule } from './modules/post/post.module';
 import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -32,6 +33,7 @@ import { SchedulesModule } from './schedules/schedules.module';
     PassportModule,
     SocketModule,
     ChatModule,
+    PostModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

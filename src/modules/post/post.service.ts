@@ -1,0 +1,142 @@
+import { Like } from './../../database/entities/mysql/like.entity';
+import { Post } from './../../database/entities/mysql/post.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ApiError } from '../../common/responses/api-error';
+import { ApiOK } from '../../common/responses/api-response';
+import * as _ from 'lodash'
+import { AddCommentDto, CreatPostDto, DeleteCommentDto, GetPostDto, LikeDto } from './dto/post.dto';
+import { Comment } from '../../database/entities/mysql/comment.entity';
+import { AsyncAction } from 'rxjs/internal/scheduler/AsyncAction';
+import { UserService } from '../user/user.service';
+
+@Injectable()
+export class PostService {
+  constructor(
+    @InjectRepository(Post)
+    private readonly postRepository: Repository<Post>,
+    @InjectRepository(Like)
+    private readonly likeRepository: Repository<Like>,
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
+    private readonly userService: UserService,
+  ) { }
+
+  async createPost(userId: number, data: CreatPostDto, file?) {
+    try {
+      let post = await this.postRepository.create({
+        userId: userId,
+        title: data.title,
+        image: data.image
+      })
+      await this.postRepository.save(post);
+      return new ApiOK(post)
+    } catch (error) {
+      throw new ApiError('SYSTEM_ERROR', 'System error', error)
+    }
+  }
+
+  async getPost(userId: number, data: GetPostDto) {
+    const offset = data.offset ? data.offset : 0;
+    const limit = data.limit ? data.limit : 10;
+    const idUser = data.userId ? data.userId : userId;
+
+    const query = this.postRepository.createQueryBuilder('post')
+      .select('post.id', 'id')
+      .distinct(true)
+      .addSelect('post.title', 'title')
+      .addSelect('post.image', 'image')
+      .addSelect('users.id', 'hostId')
+      .addSelect('users.avatar', 'avatar')
+      .addSelect('users.name', 'name')
+      .addSelect(`case when like.postId is not null then true else false end`, 'isLiked')
+      .innerJoin('users', 'users', 'users.id = post.userId')
+      .leftJoin('like', 'like', `like.postId = post.id AND like.isDeleted = 0 AND like.userId = ${idUser}`)
+      .leftJoin('comment', 'comment', 'comment.postId = post.id')
+
+    const result = await query.offset(offset)
+      .limit(limit)
+      .getRawMany();
+
+    const members = await this.postRepository.createQueryBuilder('post')
+      .innerJoinAndSelect('comment', 'comment', 'comment.postId = post.id')
+      .innerJoinAndSelect('users', 'users', 'comment.postId = users.id')
+      .where(`post.id in (:...postIds)`, { postIds: result.map(item => item.id) })
+      .getRawMany()
+
+    const membersCustom = _.map(members, (item) => {
+      return (
+        {
+          postId: item.post_id,
+          userId: item.users_id,
+          name: item.users_name,
+          avatar: item.users_avatar,
+          comment: item.comment_content
+        }
+      )
+    })
+
+    const newResult = _.map(result, (items) => {
+      let members = []
+      _.map(membersCustom, item => {
+        if (item.postId === items.id) {
+          members.push(item)
+        }
+      })
+      items.members = members
+      return items;
+    }, [])
+
+    const newItems = _.reduce(result, (data, item) => {
+      if (item.isLiked.toString() === '1') {
+        item.isLiked = true
+      } else {
+        item.isLiked = false
+      }
+      data.push(item)
+      return data
+    }, [])
+
+    const total = await query.getCount();
+    return { items: newItems, total: total }
+  }
+
+
+  async useLike(data: LikeDto) {
+    let like = await this.likeRepository.findOne({
+      userId: data.userId,
+      postId: data.postId,
+
+    });
+    const status = like ? !like.isDeleted : false;
+    if (!like) {
+      like = await this.likeRepository.create({
+        userId: data.userId,
+        postId: data.postId,
+      });
+    }
+    like.isDeleted = status;
+    this.likeRepository.save(like);
+    return like;
+  }
+
+  async addComment(userId, data: AddCommentDto) {
+    const comment = await this.commentRepository.create({
+      postId: data.postId,
+      userId,
+      content: data.content
+    });
+    this.commentRepository.save(comment)
+    return comment;
+  }
+
+  async deleteComment(data: DeleteCommentDto) {
+    await this.commentRepository.delete({
+      id: data.idComment
+    })
+    return true
+  }
+
+}
+
