@@ -3,18 +3,9 @@ import { IsDateString, IsJSON, IsNotEmpty, IsOptional, IsString } from "class-va
 
 export class MessageDto {
   @ApiProperty()
-  @IsNotEmpty({ message: 'MSG_2' })
-  roomId: number;
-
-  @ApiProperty()
   @IsString()
   @IsNotEmpty({ message: 'MSG_2' })
   content: string
-
-  @ApiProperty({ required: false, nullable: true })
-  @IsOptional()
-  @IsJSON()
-  metadata: any
 
   @ApiProperty({ required: false, nullable: true })
   @IsOptional()
@@ -22,10 +13,6 @@ export class MessageDto {
 }
 
 export class GetMessageHistoryDto {
-  @ApiProperty()
-  @IsNotEmpty({ message: 'MSG_2' })
-  roomId: number;
-
   @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   receiverId: number
@@ -35,6 +22,16 @@ export class GetMessageHistoryDto {
   lastId: number
 
   @ApiProperty({ required: false, nullable: true })
+  @IsOptional()
+  limit: number
+}
+
+export class GetMessageDto {
+  @ApiProperty({ required: false, default: 0 })
+  @IsOptional()
+  offset: number
+
+  @ApiProperty({ required: false, default: 10 })
   @IsOptional()
   limit: number
 }

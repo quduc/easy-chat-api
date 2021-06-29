@@ -87,59 +87,67 @@ export class SocketGateway extends SocketBaseClass {
   //done rewrite + check
   @SubscribeMessage('sendMessage')
   public async handleMessage(client: Socket, payload: MessageDto) {
+    let user = client['user']
+    if (!user) {
+      client.emit('errorLogger', { event: 'sendMessage', message: 'User not validated!' })
+      this.logger.error(`***onSendMessage*** exception: User not found`)
+      return;
+    }
+    async.auto({
+      sendMessage: async (cb) => {
+        const info = await this.chatService.sendMessage(user.id, payload)
+        if (info) {
+          cb(null, info)
+          return
+        }
+        cb({ user: user.id, error: 'Send message fail' })
+        return
+      },
+    }, async (e, result) => {
+      if (e) {
+        client.emit('errorLogger', { event: 'sendMessage', message: e.error, userId: e.userId, roomId: e.roomId })
+        return this.logger.error(`***onSendMessage*** exception: userId ${e.userId} - roomId: ${e.roomId}: ${e.error}`);
+      }
+      this.server.to(this._socketMap[payload.receiverId]).emit('getMessage', new ApiOK(result.sendMessage));
+      this.server.to(this._socketMap[client['user'].id]).emit('getMessage', new ApiOK(result.sendMessage));
+
+    })
   }
-
-  //done rewrite + check
-  @SubscribeMessage('joinRoom')
-  public async onRoomChange(client: Socket, room: string): Promise<void> {
-  }
-
-  //done rewrite + check
-  @SubscribeMessage('leaveRoom')
-  public async onLeaveRoom(client: Socket, room: string): Promise<void> {
-  }
-
-  //done rewrite
-  @SubscribeMessage('getHistoryChat')
-  public async getHistoryChat(client: Socket, payload: GetMessageHistoryDto): Promise<void> {
-  }
-
-  //done rewrite
-  @SubscribeMessage('kickMembers')
-  public async kickMembers(client: Socket, payload): Promise<void> {
-  }
-
-  //NEED REWRITE!!!!!!
-  @SubscribeMessage('changeRoomMode')
-  public async changeStatusRoom(client: Socket): Promise<void> {
-
-  }
-
-  @SubscribeMessage('suggestSong')
-  public async suggestSong(client: Socket, payload): Promise<void> {
-  }
-
-  @SubscribeMessage('voteSong')
-  public async vote(client: Socket, payload): Promise<void> {
-  }
-
-
-
 
   public async handleConnection(client: Socket): Promise<void> {
+    await super.handleConnection(client)
+    if (!client['user'] || !client['user']['id']) {
+      this.logger.error('_onConnection invalid connected userid: socketId=' + client.id);
+      return;
+    }
+
+    this._socketMap[client['user'].id] = client.id;
   }
 
   public async handleDisconnect(client: Socket): Promise<void> {
-  }
-
-  public async endTournamentUpdate(room, autoStart?: boolean) {
-
-  }
-
-  public async playNextSongImmediately(room: number, status?, evt?: string, sendUpdate?: boolean) {
-  }
-
-  public async setSongPlayingInQueue(room: number, listSong?: any[], allSong?: any[]) {
-
+    const user = client['user']
+    const room = client['currentRoomId'] ? client['currentRoomId'] : null
+    super.handleDisconnect(client)
+    let roomInfo
+    try {
+      if (room && user) {
+      }
+      if (!roomInfo) return this.logger.error(`***onDisconnected*** error: userId=${user ? user.id : null} room not found`);
+      const online = this.server.adapter.rooms[room] ? this.server.adapter.rooms[room].length : null;
+      if (!online || online === 0) {
+        this.redisService.del(`room-${roomInfo.id}`)
+        delete (this._songPlaying[room])
+        if (this._tournamentMembers[room]) delete (this._tournamentMembers[room])
+        return
+      }
+      const mode = this._roomStatus[room] ? this._roomStatus[room].mode : null;
+      let info = Object.assign({}, roomInfo, { mode: mode, online: online })
+      this.server.to(room).emit('updateRoomInfo', new ApiOK(info))
+      this.redisService.set(`room-${room}`, this._roomStatus[room])
+    } catch (e) {
+      // client.emit('errorLogger', { room: room, user: user.id, error: e })
+      return this.logger.error(`***onDisconnected*** error: userId=${user ? user.id : null} roomId=${room ? room : null} ${e.message}`);
+    }
+    delete (this._socketMap[client['user']['id']]);
   }
 }

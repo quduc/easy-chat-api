@@ -22,19 +22,9 @@ export class Conversation {
     @Column({ type: 'bigint', unsigned: true, nullable: true, default: null })
     receiverId: number
 
-    @Index()
-    @Column({ type: 'bigint', unsigned: true })
-    roomId: number
-
-    @Column({ default: false })
-    isDeleted: boolean
-
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date
 
     @Column("timestamp", { precision: 6, default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
     updatedAt: Date
-
-    @Column({ nullable: true, default: null })
-    metadata: string
 }

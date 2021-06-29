@@ -19,11 +19,8 @@ export class DetailMessageDto {
     this.sender = entity.sender
     this.senderId = entity.senderId
     this.content = entity.content
-    this.metadata = entity.metadata
     this.receiverId = entity.receiverId
-    this.roomId = entity.roomId
     this.createdAt = entity.createdAt
-    this.isDeleted = entity.isDeleted
     delete (this.sender.email)
     delete (this.sender.password)
     delete (this.sender.updatedAt)

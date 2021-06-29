@@ -25,7 +25,7 @@ import { ConfigService } from '../config/config.service';
         "migrationsTransactionMode": 'each',
         "migrations": [__dirname + '/migrations/mysql/*.{ts,js}'],
         "cache": true,
-        "synchronize": false
+        "synchronize": false,
       }),
     })
   ],
