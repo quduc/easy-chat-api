@@ -20,7 +20,6 @@ import {
   RegisterUserDeviceDto,
   UpdatePasswordUserDto,
   UpdateProfileDto,
-  UpdateUserNotificationSettingDto,
 } from './dto/request.dto';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { ApiOK } from '../../common/responses/api-response';
@@ -79,19 +78,5 @@ export class UserController {
     @CurrentUser() user
   ) {
     return await this.userService.removeUserDevice(user.id);
-  }
-
-  @Get('notification-setting')
-  @ApiOperation({ summary: 'Get user profile' })
-  async getUserNotificationSetting(@CurrentUser() user) {
-    const result = await this.userService.getUserNotificationSetting(user.id);
-    return new ApiOK(result)
-  }
-
-  @Put('notification-setting')
-  @ApiOperation({ summary: 'Get user profile' })
-  async updateUserNotificationSetting(@CurrentUser() user, @Body() data: UpdateUserNotificationSettingDto) {
-    const result = await this.userService.updateUserNotificationSetting(user.id, data);
-    return new ApiOK(result)
   }
 }

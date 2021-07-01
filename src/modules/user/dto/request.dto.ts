@@ -108,24 +108,3 @@ export class GetListUserDto {
   @IsOptional()
   offset: number;
 }
-export class UpdateUserNotificationSettingDto {
-  @ApiProperty({ required: false })
-  @IsOptional()
-  showFriendRequest: boolean
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  showAcceptedRequest: boolean
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  showFriendActivities: boolean
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  showFollowActivities: boolean
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  showInvitation: boolean
-}

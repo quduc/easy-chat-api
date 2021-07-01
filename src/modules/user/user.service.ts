@@ -12,7 +12,6 @@ import {
   RegisterUserDeviceDto,
   UpdatePasswordUserDto,
   UpdateProfileDto,
-  UpdateUserNotificationSettingDto,
 } from './dto/request.dto';
 import * as bcrypt from 'bcrypt';
 import { AppConfig } from '../../common/constants/app-config';
@@ -23,7 +22,6 @@ import { UploadType } from '../../s3/dto/request.dto';
 import moment from 'moment';
 import { Number } from 'mongoose';
 import { Friend } from '../../database/entities/mysql/friend.entity';
-import { UserNotification } from '../../database/entities/mysql/user_notification.entity';
 
 @Injectable()
 export class UserService {
@@ -34,8 +32,6 @@ export class UserService {
     private readonly deviceRepository: Repository<UserDevice>,
     @InjectRepository(Friend)
     private readonly friendRepository: Repository<Friend>,
-    @InjectRepository(UserNotification)
-    private readonly userSettingRepository: Repository<UserNotification>,
     private readonly redisService: RedisService,
     private readonly fileService: S3Service,
     private readonly httpService: HttpService
@@ -212,30 +208,5 @@ export class UserService {
 
   async setUserInfoRedis(user: User) {
     await this.redisService.set(`user-${user.id}`, user);
-  }
-
-  async getUserNotificationSetting(userId: number) {
-    const cacheUser = await this.getUserInfoRedis(userId)
-    let setting = await this.userSettingRepository.findOne({ userId: userId })
-    if (!setting) {
-      setting = await this.userSettingRepository.create({
-        userId: userId
-      })
-      await this.userSettingRepository.save(setting)
-    }
-    return setting
-  }
-
-  async updateUserNotificationSetting(userId: number, data: UpdateUserNotificationSettingDto) {
-    let setting = await this.getUserNotificationSetting(userId)
-    setting.showFriendRequest = data.showFriendRequest
-    setting.showAcceptedRequest = data.showAcceptedRequest
-    setting.showFriendActivities = data.showFriendActivities
-    setting.showFollowActivities = data.showFollowActivities
-    setting.showInvitation = data.showInvitation
-    await this.userSettingRepository.save(setting)
-
-    // setting = await this.userSettingRepository.findOne({ userId: userId })
-    return setting
   }
 }

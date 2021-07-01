@@ -9,7 +9,6 @@ import { UserDevice } from '../../database/entities/mysql/user-device.entity';
 import { S3Module } from '../../s3/s3.module';
 import { Room } from '../../database/entities/mysql/room.entity';
 import { Friend } from '../../database/entities/mysql/friend.entity';
-import { UserNotification } from '../../database/entities/mysql/user_notification.entity';
 
 @Global()
 @Module({
@@ -17,7 +16,7 @@ import { UserNotification } from '../../database/entities/mysql/user_notificatio
   controllers: [UserController],
   exports: [UserService],
   imports: [
-    TypeOrmModule.forFeature([User, UserDevice, Room, Friend, UserNotification]),
+    TypeOrmModule.forFeature([User, UserDevice, Room, Friend]),
     AuthModule,
     RedisModule,
     HttpModule,
