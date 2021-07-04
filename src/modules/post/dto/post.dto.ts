@@ -9,7 +9,7 @@ export class CreatPostDto {
     @Length(0, 60)
     title: string
 
-    @ApiProperty({ required: false })
+    @ApiProperty({ format: 'binary' })
     @IsOptional()
     image: string
 }

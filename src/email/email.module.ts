@@ -1,3 +1,4 @@
+import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import { Module } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { EmailController } from './email.controller';
@@ -5,7 +6,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import * as path from 'path';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
-import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import { UserModule } from '../modules/user/user.module';
 
 @Module({

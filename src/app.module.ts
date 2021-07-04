@@ -51,7 +51,7 @@ import { SchedulesModule } from './schedules/schedules.module';
     S3Module,
     ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
+      rootPath: join(__dirname, '..', 'uploads'),
     }),
     SchedulesModule,
   ],

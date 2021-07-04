@@ -28,8 +28,9 @@ export class PostService {
       let post = await this.postRepository.create({
         userId: userId,
         title: data.title,
-        image: data.image
+        image: file || ''
       })
+
       await this.postRepository.save(post);
       return new ApiOK(post)
     } catch (error) {
