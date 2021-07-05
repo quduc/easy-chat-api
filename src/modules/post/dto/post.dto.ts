@@ -55,3 +55,9 @@ export class DeleteCommentDto {
     @IsNotEmpty({ message: 'MSG_2' })
     userId: number
 }
+
+export class GetPostDetailDto {
+    @ApiProperty()
+    @IsNotEmpty({ message: 'MSG_2' })
+    postId: number
+}

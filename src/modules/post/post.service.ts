@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { ApiError } from '../../common/responses/api-error';
 import { ApiOK } from '../../common/responses/api-response';
 import * as _ from 'lodash'
-import { AddCommentDto, CreatPostDto, DeleteCommentDto, GetPostDto, LikeDto } from './dto/post.dto';
+import { AddCommentDto, CreatPostDto, DeleteCommentDto, GetPostDetailDto, GetPostDto, LikeDto } from './dto/post.dto';
 import { Comment } from '../../database/entities/mysql/comment.entity';
 import { AsyncAction } from 'rxjs/internal/scheduler/AsyncAction';
 import { UserService } from '../user/user.service';
@@ -153,6 +153,50 @@ export class PostService {
     })
     return true
   }
+  async getPostDetail(userId, data: GetPostDetailDto) {
+    const queryUser = await this.postRepository.createQueryBuilder('post')
+      .select('post.id', 'id')
+      .distinct(true)
+      .addSelect('post.title', 'title')
+      .addSelect('post.image', 'image')
+      .addSelect('users.id', 'hostId')
+      .addSelect('users.avatar', 'hostAvatar')
+      .addSelect('users.name', 'hostName')
+      .addSelect(`case when like.postId is not null then true else false end`, 'isLiked')
+      .innerJoin('users', 'users', 'users.id = post.userId')
+      .leftJoin('like', 'like', `like.postId = post.id AND like.isDeleted = 0 AND like.userId = ${userId}`)
+      .where(`post.id = ${data.postId}`)
+      .getRawMany()
 
+
+    const queryLike = await this.likeRepository.createQueryBuilder('like')
+      .select('users.id', 'userId')
+      .addSelect('users.avatar', 'avatar')
+      .addSelect('users.name', 'name')
+      .innerJoin('users', 'users', 'users.id = like.userId')
+      .where(`like.postId = ${data?.postId}`)
+      .getRawMany()
+
+    const totalLike = queryLike?.length
+
+    const queryComment = await this.commentRepository.createQueryBuilder('comment')
+      .select('users.id', 'userId')
+      .addSelect('users.avatar', 'avatar')
+      .addSelect('users.name', 'name')
+      .addSelect('comment.content', 'content')
+      .innerJoin('users', 'users', 'users.id = comment.userId')
+      .where(`comment.postId = ${data?.postId}`)
+      .getRawMany()
+    const totalComment = queryComment?.length
+
+    const response = {
+      ...queryUser[0],
+      membersLike: queryLike,
+      totalLike,
+      memberComment: queryComment,
+      totalComment: totalComment
+    }
+    return response
+  }
 }
 

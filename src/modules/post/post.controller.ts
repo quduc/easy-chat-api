@@ -4,7 +4,7 @@ import { ApiOK } from '../../common/responses/api-response';
 import { CurrentUser } from '../../common/decorators/user.decorator';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AddCommentDto, CreatPostDto, GetPostDto } from './dto/post.dto';
+import { AddCommentDto, CreatPostDto, GetPostDetailDto, GetPostDto } from './dto/post.dto';
 import { S3Service } from '../../s3/s3.service';
 import { PostService } from './post.service';
 import { diskStorage } from 'multer';
@@ -77,6 +77,13 @@ export class PostController {
       idComment
     }
     const result = await this.postService.deleteComment(data);
+    return new ApiOK(result);
+  }
+
+  @Get('/postDetail')
+  @ApiOperation({ summary: 'Get Post detail' })
+  async getPostDetail(@CurrentUser() user, @Query() data: GetPostDetailDto) {
+    const result = await this.postService.getPostDetail(user.id, data);
     return new ApiOK(result);
   }
 }
