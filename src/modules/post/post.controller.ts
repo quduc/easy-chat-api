@@ -62,15 +62,15 @@ export class PostController {
   }
 
 
-  @Post(':postId/comment')
-  @ApiOperation({ summary: 'like/Unlike post' })
-  async addComment(@CurrentUser() user, @Query() data: AddCommentDto) {
+  @Post('/comment')
+  @ApiOperation({ summary: 'add comment' })
+  async addComment(@CurrentUser() user, @Body() data: AddCommentDto) {
     const result = await this.postService.addComment(user.id, data);
     return new ApiOK(result);
   }
 
-  @Delete(':postId/comment')
-  @ApiOperation({ summary: 'like/Unlike post' })
+  @Delete('/comment')
+  @ApiOperation({ summary: 'delete comment' })
   async deleteComment(@CurrentUser() user, @Param('postId') idComment: number) {
     const data = {
       userId: user.id,

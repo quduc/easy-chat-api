@@ -10,6 +10,7 @@ import { AddCommentDto, CreatPostDto, DeleteCommentDto, GetPostDto, LikeDto } fr
 import { Comment } from '../../database/entities/mysql/comment.entity';
 import { AsyncAction } from 'rxjs/internal/scheduler/AsyncAction';
 import { UserService } from '../user/user.service';
+import { User } from '../../database/entities/mysql/user.entity';
 
 @Injectable()
 export class PostService {
@@ -21,6 +22,8 @@ export class PostService {
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
     private readonly userService: UserService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) { }
 
   async createPost(userId: number, data: CreatPostDto, file?) {
@@ -129,7 +132,19 @@ export class PostService {
       content: data.content
     });
     this.commentRepository.save(comment)
-    return comment;
+    const user = await this.userRepository.createQueryBuilder('user')
+      .select('user.id', 'id')
+      .addSelect('user.avatar', 'avatar')
+      .addSelect('user.name', 'name')
+      .where(`user.id = ${userId}`)
+      .getRawMany();
+
+    const response = {
+      ...user[0],
+      ...comment
+    }
+
+    return response;
   }
 
   async deleteComment(data: DeleteCommentDto) {
