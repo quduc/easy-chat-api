@@ -168,6 +168,15 @@ export class PostService {
       .where(`post.id = ${data.postId}`)
       .getRawMany()
 
+    const newItems = _.reduce(queryUser, (data, item) => {
+      if (item.isLiked.toString() === '1') {
+        item.isLiked = true
+      } else {
+        item.isLiked = false
+      }
+      data.push(item)
+      return data
+    }, [])
 
     const queryLike = await this.likeRepository.createQueryBuilder('like')
       .select('users.id', 'userId')
@@ -191,7 +200,7 @@ export class PostService {
     const totalComment = queryComment?.length
 
     const response = {
-      ...queryUser[0],
+      ...newItems[0],
       membersLike: queryLike,
       totalLike,
       memberComment: queryComment,
