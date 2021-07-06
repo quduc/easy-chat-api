@@ -151,7 +151,7 @@ export class PostService {
     await this.commentRepository.delete({
       id: data.idComment
     })
-    return true
+    return data.idComment
   }
   async getPostDetail(userId, data: GetPostDetailDto) {
     const queryUser = await this.postRepository.createQueryBuilder('post')
@@ -181,6 +181,7 @@ export class PostService {
 
     const queryComment = await this.commentRepository.createQueryBuilder('comment')
       .select('users.id', 'userId')
+      .addSelect('comment.id', 'id')
       .addSelect('users.avatar', 'avatar')
       .addSelect('users.name', 'name')
       .addSelect('comment.content', 'content')

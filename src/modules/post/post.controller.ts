@@ -71,7 +71,7 @@ export class PostController {
 
   @Delete('/comment')
   @ApiOperation({ summary: 'delete comment' })
-  async deleteComment(@CurrentUser() user, @Param('postId') idComment: number) {
+  async deleteComment(@CurrentUser() user, @Body('postId') idComment: number) {
     const data = {
       userId: user.id,
       idComment
