@@ -86,4 +86,12 @@ export class PostController {
     const result = await this.postService.getPostDetail(user.id, data);
     return new ApiOK(result);
   }
+
+  @Get('/like')
+  @ApiOperation({ summary: 'Get list Like' })
+  async getListLike(@CurrentUser() user, @Query() data: GetPostDetailDto) {
+    const result = await this.postService.getListLike(user.id, data);
+    return new ApiOK(result);
+  }
+
 }

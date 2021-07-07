@@ -208,5 +208,30 @@ export class PostService {
     }
     return response
   }
+
+  async getListLike(userId: number, data: GetPostDetailDto) {
+    const queryLike = await this.likeRepository.createQueryBuilder('like')
+      .select('users.id', 'id')
+      .addSelect('users.avatar', 'avatar')
+      .addSelect('users.name', 'name')
+      .addSelect(`fr.status`, 'friendStatus')
+      .addSelect(`case when fr.isFollowed is not null and fr.isFollowed = true then true else false end`, 'isFollowed')
+      .innerJoin('users', 'users', 'users.id = like.userId')
+      .where(`like.postId = ${data?.postId}`)
+      .leftJoin('friends', 'fr', 'fr.userId = :userId and fr.isDeleted = false', { userId: userId })
+      .getRawMany()
+
+    const newItems = _.reduce(queryLike, (data, item) => {
+      if (item.isFollowed.toString() === '1') {
+        item.isFollowed = true
+      } else {
+        item.isFollowed = false
+      }
+      data.push(item)
+      return data
+    }, [])
+
+    return { items: newItems }
+  }
 }
 
