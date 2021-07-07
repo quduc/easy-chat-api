@@ -37,7 +37,7 @@ export class AuthService {
     }
 
     try {
-      await this.setUserInfoRedis(user);
+      // await this.setUserInfoRedis(user);
 
       delete (user.password)
       const payload = { username: user.name, id: user.id };

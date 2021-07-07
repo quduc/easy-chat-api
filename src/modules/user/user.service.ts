@@ -125,7 +125,7 @@ export class UserService {
     try {
       delete cacheUser.password;
       const newInfo = Object.assign({}, cacheUser, data);
-      await this.setUserInfoRedis(newInfo);
+      // await this.setUserInfoRedis(newInfo);
       this.userRepository.save(newInfo);
 
       return new ApiOK(newInfo);
@@ -155,7 +155,7 @@ export class UserService {
       { password: hashPassword },
     );
     const newInfo = await this.userRepository.findOne({ id: userId });
-    await this.setUserInfoRedis(newInfo);
+    // await this.setUserInfoRedis(newInfo);
     return new ApiOK(newInfo);
   }
 
@@ -192,21 +192,19 @@ export class UserService {
   }
 
   async getUserInfoRedis(userId) {
-    let cacheUser = await this.redisService.get(`user-${userId}`);
+    let cacheUser
+    console.log('Get user from database');
+    cacheUser = await this.userRepository.findOne({ id: userId });
     if (!cacheUser) {
-      console.log('Get user from database');
-      cacheUser = await this.userRepository.findOne({ id: userId });
-      if (!cacheUser) {
-        throw new ApiError('USER_NOT_FOUND', 'User not found!', {});
-        // return { success: false, message: 'User not found!', code: 'USER_NOT_FOUND' }
-      } else {
-        await this.setUserInfoRedis(cacheUser);
-      }
+      throw new ApiError('USER_NOT_FOUND', 'User not found!', {});
+      // return { success: false, message: 'User not found!', code: 'USER_NOT_FOUND' }
+    } else {
+      // await this.setUserInfoRedis(cacheUser);
     }
     return cacheUser;
   }
 
-  async setUserInfoRedis(user: User) {
-    await this.redisService.set(`user-${user.id}`, user);
-  }
+  // async setUserInfoRedis(user: User) {
+  //   await this.redisService.set(`user-${user.id}`, user);setUserInfoRedis
+  // }
 }

@@ -4,7 +4,6 @@ import { In, Not, Repository } from 'typeorm';
 import { ApiError } from '../../common/responses/api-error';
 import { User } from '../../database/entities/mysql/user.entity';
 import { ApiOK } from '../../common/responses/api-response';
-import { RedisService } from '../../redis/redis.service';
 import { OTP, OtpStatus, OtpType } from '../../database/entities/mysql/otp.entity';
 import { AppConfig } from '../../common/constants/app-config';
 import * as _ from 'lodash'
@@ -19,7 +18,6 @@ export class OtpService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(OTP)
     private readonly otpRepository: Repository<OTP>,
-    private readonly redisService: RedisService,
     private readonly emailService: EmailService
   ) { }
 
@@ -32,7 +30,7 @@ export class OtpService {
     try {
       await this.otpRepository.update({ userId: cacheUser.id, type: data.type, status: In([OtpStatus.PENDING, OtpStatus.VERIFIED]) }, { status: OtpStatus.EXPIRED })
 
-      const otpCode = '1111' //_.padStart(_.random(0, Math.pow(10, AppConfig.OTP.LENGTH) - 1).toString(), AppConfig.OTP.LENGTH, '0');
+      const otpCode = _.padStart(_.random(0, Math.pow(10, AppConfig.OTP.LENGTH) - 1).toString(), AppConfig.OTP.LENGTH, '0');
       otp = await this.otpRepository.create({
         userId: cacheUser.id,
         otp: otpCode,
