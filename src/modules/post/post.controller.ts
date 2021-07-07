@@ -45,7 +45,7 @@ export class PostController {
   }
 
   @Get('')
-  @ApiOperation({ summary: 'Get list room' })
+  @ApiOperation({ summary: 'Get list Post' })
   async getListRoom(@CurrentUser() user, @Query() data: GetPostDto) {
     return await this.postService.getPost(user.id, data)
   }

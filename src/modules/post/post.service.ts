@@ -50,6 +50,7 @@ export class PostService {
       .select('post.id', 'id')
       .distinct(true)
       .addSelect('post.title', 'title')
+      .addSelect('post.createdAt', 'createdAt')
       .addSelect('post.image', 'image')
       .addSelect('users.id', 'hostId')
       .addSelect('users.avatar', 'avatar')
@@ -63,47 +64,47 @@ export class PostService {
       .limit(limit)
       .getRawMany();
 
-    const members = await this.postRepository.createQueryBuilder('post')
-      .innerJoinAndSelect('comment', 'comment', 'comment.postId = post.id')
-      .innerJoinAndSelect('users', 'users', 'comment.postId = users.id')
-      .where(`post.id in (:...postIds)`, { postIds: result.map(item => item.id) })
-      .getRawMany()
+    // const members = await this.postRepository.createQueryBuilder('post')
+    //   .innerJoinAndSelect('comment', 'comment', 'comment.postId = post.id')
+    //   .innerJoinAndSelect('users', 'users', 'comment.postId = users.id')
+    //   .where(`post.id in (:...postIds)`, { postIds: result.map(item => item.id) })
+    //   .getRawMany()
 
-    const membersCustom = _.map(members, (item) => {
-      return (
-        {
-          postId: item.post_id,
-          userId: item.users_id,
-          name: item.users_name,
-          avatar: item.users_avatar,
-          comment: item.comment_content
-        }
-      )
-    })
+    // const membersCustom = _.map(members, (item) => {
+    //   return (
+    //     {
+    //       postId: item.post_id,
+    //       userId: item.users_id,
+    //       name: item.users_name,
+    //       avatar: item.users_avatar,
+    //       comment: item.comment_content
+    //     }
+    //   )
+    // })
 
-    const newResult = _.map(result, (items) => {
-      let members = []
-      _.map(membersCustom, item => {
-        if (item.postId === items.id) {
-          members.push(item)
-        }
-      })
-      items.members = members
-      return items;
-    }, [])
+    // const newResult = _.map(result, (items) => {
+    //   let members = []
+    //   _.map(membersCustom, item => {
+    //     if (item.postId === items.id) {
+    //       members.push(item)
+    //     }
+    //   })
+    //   items.members = members
+    //   return items;
+    // }, [])
 
-    const newItems = _.reduce(result, (data, item) => {
-      if (item.isLiked.toString() === '1') {
-        item.isLiked = true
-      } else {
-        item.isLiked = false
-      }
-      data.push(item)
-      return data
-    }, [])
+    // const newItems = _.reduce(result, (data, item) => {
+    //   if (item.isLiked.toString() === '1') {
+    //     item.isLiked = true
+    //   } else {
+    //     item.isLiked = false
+    //   }
+    //   data.push(item)
+    //   return data
+    // }, [])
 
     const total = await query.getCount();
-    return { items: newItems, total: total }
+    return { items: result, total: total }
   }
 
 
