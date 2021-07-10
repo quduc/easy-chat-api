@@ -15,7 +15,6 @@ import * as async from 'async';
 import * as _ from 'lodash'
 import { RedisService } from '../redis/redis.service';
 import moment from 'moment';
-import { RoomMode, RoomType, SkipRuleType } from '../database/entities/mysql/room.entity';
 import { AppConfig } from '../common/constants/app-config';
 
 export interface RoomInfomation {
@@ -32,8 +31,6 @@ export interface RoomInfomation {
   description?: string
   cover?: string
   listSong?: any[]
-  skipRule: SkipRuleType
-  mode: RoomMode
   nowPlaying?: {}
   online: number
   startTour?: Date

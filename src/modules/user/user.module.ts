@@ -7,7 +7,6 @@ import { AuthModule } from '../auth/auth.module';
 import { RedisModule } from '../../redis/redis.module';
 import { UserDevice } from '../../database/entities/mysql/user-device.entity';
 import { S3Module } from '../../s3/s3.module';
-import { Room } from '../../database/entities/mysql/room.entity';
 import { Friend } from '../../database/entities/mysql/friend.entity';
 
 @Global()
@@ -16,7 +15,7 @@ import { Friend } from '../../database/entities/mysql/friend.entity';
   controllers: [UserController],
   exports: [UserService],
   imports: [
-    TypeOrmModule.forFeature([User, UserDevice, Room, Friend]),
+    TypeOrmModule.forFeature([User, UserDevice, Friend]),
     AuthModule,
     RedisModule,
     HttpModule,

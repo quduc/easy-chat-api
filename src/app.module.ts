@@ -21,7 +21,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LoggerMiddleware } from './common/middleware/LoggerMiddleware';
-import { SchedulesModule } from './schedules/schedules.module';
 
 @Module({
   imports: [
@@ -53,7 +52,6 @@ import { SchedulesModule } from './schedules/schedules.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
     }),
-    SchedulesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
