@@ -4,7 +4,6 @@ import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { ChatModule } from '../modules/chat/chat.module';
 import { UserModule } from '../modules/user/user.module';
-import { RedisModule } from '../redis/redis.module';
 import { SocketGateway } from './socket.gateway';
 
 @Module({
@@ -13,7 +12,6 @@ import { SocketGateway } from './socket.gateway';
     ChatModule,
     UserModule,
     ConfigModule,
-    RedisModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

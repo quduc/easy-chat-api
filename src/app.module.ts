@@ -6,7 +6,6 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from './config/config.module';
-import { RedisModule } from './redis/redis.module';
 import { PassportModule } from '@nestjs/passport';
 import { SocketModule } from './socket/socket.module';
 import { ChatModule } from './modules/chat/chat.module';
@@ -28,7 +27,6 @@ import { LoggerMiddleware } from './common/middleware/LoggerMiddleware';
     AuthModule,
     DatabaseModule,
     ConfigModule,
-    RedisModule,
     PassportModule,
     SocketModule,
     ChatModule,

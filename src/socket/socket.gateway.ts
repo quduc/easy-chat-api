@@ -13,7 +13,6 @@ import { GetMessageHistoryDto, MessageDto } from '../modules/chat/dto/request.dt
 import { ApiOK } from '../common/responses/api-response';
 import * as async from 'async';
 import * as _ from 'lodash'
-import { RedisService } from '../redis/redis.service';
 import moment from 'moment';
 import { AppConfig } from '../common/constants/app-config';
 
@@ -71,7 +70,6 @@ export class SocketGateway extends SocketBaseClass {
     protected readonly configService: ConfigService,
     protected readonly userService: UserService,
     protected readonly chatService: ChatService,
-    protected readonly redisService: RedisService
   ) {
     super(jwtService, configService, userService)
   }
@@ -132,7 +130,6 @@ export class SocketGateway extends SocketBaseClass {
       if (!roomInfo) return this.logger.error(`***onDisconnected*** error: userId=${user ? user.id : null} room not found`);
       const online = this.server.adapter.rooms[room] ? this.server.adapter.rooms[room].length : null;
       if (!online || online === 0) {
-        this.redisService.del(`room-${roomInfo.id}`)
         delete (this._songPlaying[room])
         if (this._tournamentMembers[room]) delete (this._tournamentMembers[room])
         return
@@ -140,7 +137,6 @@ export class SocketGateway extends SocketBaseClass {
       const mode = this._roomStatus[room] ? this._roomStatus[room].mode : null;
       let info = Object.assign({}, roomInfo, { mode: mode, online: online })
       this.server.to(room).emit('updateRoomInfo', new ApiOK(info))
-      this.redisService.set(`room-${room}`, this._roomStatus[room])
     } catch (e) {
       // client.emit('errorLogger', { room: room, user: user.id, error: e })
       return this.logger.error(`***onDisconnected*** error: userId=${user ? user.id : null} roomId=${room ? room : null} ${e.message}`);

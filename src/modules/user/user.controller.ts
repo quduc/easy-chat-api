@@ -1,3 +1,4 @@
+import { diskStorage } from 'multer';
 import {
   Body,
   Controller,
@@ -13,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CurrentUser } from '../../common/decorators/user.decorator';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   GetListUserDto,
   ProfileDto,
@@ -25,6 +26,22 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { ApiOK } from '../../common/responses/api-response';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { S3Service } from '../../s3/s3.service';
+import { v4 as uuidv4 } from 'uuid';
+
+import path = require('path');
+
+export const storage = {
+  storage: diskStorage({
+    destination: './uploads/profileimages',
+    filename: (req, file, cb) => {
+      const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+      const extension: string = path.parse(file.originalname).ext;
+
+      cb(null, `${filename}${extension}`)
+    }
+  })
+
+}
 
 @Auth()
 @Controller('user')
@@ -56,7 +73,6 @@ export class UserController {
     file && this.fileService.validateFile(file)
     return await this.userService.updateUserProfile(user.id, data, file);
   }
-
   @Put('password')
   @ApiOperation({ summary: 'Update user password' })
   async updateUserPassword(

@@ -5,7 +5,6 @@ import { Not, Repository } from 'typeorm';
 import { ApiError } from '../../common/responses/api-error';
 import { ApiOK } from '../../common/responses/api-response';
 import { User } from '../../database/entities/mysql/user.entity';
-import { RedisService } from '../../redis/redis.service';
 import {
   GetListUserDto,
   ProfileDto,
@@ -32,7 +31,6 @@ export class UserService {
     private readonly deviceRepository: Repository<UserDevice>,
     @InjectRepository(Friend)
     private readonly friendRepository: Repository<Friend>,
-    private readonly redisService: RedisService,
     private readonly fileService: S3Service,
     private readonly httpService: HttpService
   ) { }
@@ -41,16 +39,20 @@ export class UserService {
     try {
       const IdUser = data && data.userId ? data.userId : currentId
       const queryFriend = await this.friendRepository.createQueryBuilder('friends')
-        .select('count(friends.userId)', 'numberFriend')
-        .where(`friends.userId = ${IdUser} AND friends.status = '${FriendStatus.FRIEND}'`)
+        .select('count(friends.id)', 'numberFriend')
+        .where(`friends.userId = ${IdUser} AND friends.status = '${FriendStatus.FRIEND}' and friends.isDeleted = false`)
+        .groupBy('friends.userId')
         .getRawMany()
       const queryFollowers = await this.friendRepository.createQueryBuilder('friends')
-        .select('count(friends.userId)', 'numberFollowers')
-        .where(`friends.friendId = ${IdUser} AND friends.isFollowed = 1`)
+        .select('count(friends.id)', 'numberFollowers')
+        .where(`friends.friendId = ${IdUser} AND friends.isFollowed = 1 and friends.isDeleted = false`)
+        .groupBy('friends.friendId')
         .getRawMany()
+
       const queryFollowing = await this.friendRepository.createQueryBuilder('friends')
-        .select('count(friends.userId)', 'numberFollowing')
+        .select('count(friends.id)', 'numberFollowing')
         .where(`friends.userId = ${IdUser} AND friends.isFollowed = 1 and friends.isDeleted = false`)
+        .groupBy('friends.userId')
         .getRawMany()
 
       const queryUser = await this.userRepository.createQueryBuilder('user')
@@ -60,16 +62,50 @@ export class UserService {
       delete (queryUser.updatedAt)
       delete (queryUser.isFbConnect)
 
-      const result = Object.assign({}, queryUser, {
-        numberFriend: parseInt(queryFriend[0].numberFriend),
-        queryFollowers: parseInt(queryFollowers[0].numberFollowers),
-        queryFollowing: parseInt(queryFollowing[0].numberFollowing)
+      let result = Object.assign({}, queryUser, {
+        numberFriend: parseInt(queryFriend[0]?.numberFriend || 0),
+        queryFollowers: parseInt(queryFollowers[0]?.numberFollowers || 0),
+        queryFollowing: parseInt(queryFollowing[0]?.numberFollowing || 0)
       })
+
+      if (data?.userId) {
+        const queryFriend = await this.friendRepository.createQueryBuilder('friend')
+          .select('friend.isFollowed', 'isFollowed')
+          .addSelect('friend.status', 'status')
+          .where(`friend.userId = ${currentId} AND friend.friendId = ${data.userId} AND friend.isDeleted = false`)
+          .getRawMany();
+
+        const queryFriendRequest = await this.friendRepository.createQueryBuilder('friend')
+          .select(`case when friend.userId is not null then true else false end`, 'isRequestFriend')
+          .addSelect('friend.id', 'id')
+          .where(`friend.userId = ${currentId} AND friend.friendId = ${data.userId}`)
+          .where(`friend.userId = ${data?.userId} and friend.friendId = ${currentId} and friend.status = 'PENDING' and friend.isDeleted = 0`)
+          .getRawMany();
+
+        result["isFollowed"] = queryFriend[0]?.isFollowed
+        result["status"] = queryFriend[0]?.status
+        result["isRequestFriend"] = queryFriendRequest[0]?.isRequestFriend
+        result["requestId"] = queryFriendRequest[0]?.id
+
+        if (result["isFollowed"] == 1) {
+          result["isFollowed"] = true
+        } else {
+          result["isFollowed"] = false
+        }
+
+        if (result["isRequestFriend"] == '1') {
+          result["isRequestFriend"] = true
+        } else {
+          result["isRequestFriend"] = false
+        }
+      }
+
       return new ApiOK(result);
     } catch (e) {
       console.log(e);
       throw new ApiError('SYSTEM_ERROR', 'System error', e);
     }
+
   }
   //writing
   async getUserList(userId: number, data: GetListUserDto) {
@@ -125,7 +161,6 @@ export class UserService {
     try {
       delete cacheUser.password;
       const newInfo = Object.assign({}, cacheUser, data);
-      // await this.setUserInfoRedis(newInfo);
       this.userRepository.save(newInfo);
 
       return new ApiOK(newInfo);
@@ -155,7 +190,6 @@ export class UserService {
       { password: hashPassword },
     );
     const newInfo = await this.userRepository.findOne({ id: userId });
-    // await this.setUserInfoRedis(newInfo);
     return new ApiOK(newInfo);
   }
 
@@ -197,14 +231,7 @@ export class UserService {
     cacheUser = await this.userRepository.findOne({ id: userId });
     if (!cacheUser) {
       throw new ApiError('USER_NOT_FOUND', 'User not found!', {});
-      // return { success: false, message: 'User not found!', code: 'USER_NOT_FOUND' }
-    } else {
-      // await this.setUserInfoRedis(cacheUser);
     }
     return cacheUser;
   }
-
-  // async setUserInfoRedis(user: User) {
-  //   await this.redisService.set(`user-${user.id}`, user);setUserInfoRedis
-  // }
 }

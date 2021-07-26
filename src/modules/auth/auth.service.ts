@@ -6,7 +6,6 @@ import { User } from '../../database/entities/mysql/user.entity';
 import { LoginDto, LoginFbDto, RegisterDto, ResetPasswordDto } from './dto/request.dto';
 import * as bcrypt from 'bcrypt'
 import { ApiOK } from '../../common/responses/api-response';
-import { RedisService } from '../../redis/redis.service';
 import { JwtService } from '@nestjs/jwt';
 import { OtpService } from './otp.service';
 import { OTP, OtpStatus } from '../../database/entities/mysql/otp.entity';
@@ -20,7 +19,6 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(OTP)
     private readonly otpRepository: Repository<OTP>,
-    private readonly redisService: RedisService,
     private readonly jwtService: JwtService,
     private readonly otpService: OtpService,
     private readonly fbProvider: FacebookAuthProvider
@@ -37,8 +35,6 @@ export class AuthService {
     }
 
     try {
-      // await this.setUserInfoRedis(user);
-
       delete (user.password)
       const payload = { username: user.name, id: user.id };
       const accessToken = this.jwtService.sign(payload)
@@ -92,8 +88,6 @@ export class AuthService {
     }
 
     try {
-      await this.setUserInfoRedis(user);
-
       delete (user.password)
       const payload = { username: user.name, id: user.id };
       const accessToken = this.jwtService.sign(payload)
@@ -129,6 +123,5 @@ export class AuthService {
   }
 
   async setUserInfoRedis(user: User) {
-    await this.redisService.set(`user-${user.id}`, user);
   }
 }

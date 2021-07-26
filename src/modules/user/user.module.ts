@@ -4,7 +4,6 @@ import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../database/entities/mysql/user.entity';
 import { AuthModule } from '../auth/auth.module';
-import { RedisModule } from '../../redis/redis.module';
 import { UserDevice } from '../../database/entities/mysql/user-device.entity';
 import { S3Module } from '../../s3/s3.module';
 import { Friend } from '../../database/entities/mysql/friend.entity';
@@ -17,7 +16,6 @@ import { Friend } from '../../database/entities/mysql/friend.entity';
   imports: [
     TypeOrmModule.forFeature([User, UserDevice, Friend]),
     AuthModule,
-    RedisModule,
     HttpModule,
     S3Module
   ],

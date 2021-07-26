@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../database/entities/mysql/user.entity';
-import { RedisModule } from '../../redis/redis.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '../../config/config.service';
 import { ConfigModule } from '../../config/config.module';
@@ -19,7 +18,6 @@ import { FacebookAuthProvider } from './providers/facebook.provider';
   controllers: [AuthController],
   imports: [
     TypeOrmModule.forFeature([User, OTP]),
-    RedisModule,
     ConfigModule,
     EmailModule,
     PassportModule.register({ defaultStrategy: "jwt" }),

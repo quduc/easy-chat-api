@@ -59,6 +59,7 @@ export class PostService {
       .innerJoin('users', 'users', 'users.id = post.userId')
       .leftJoin('like', 'like', `like.postId = post.id AND like.isDeleted = 0 AND like.userId = ${idUser}`)
       .leftJoin('comment', 'comment', 'comment.postId = post.id')
+      .orderBy('post.createdAt', 'DESC')
 
     const result = await query.offset(offset)
       .limit(limit)
