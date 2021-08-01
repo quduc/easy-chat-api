@@ -92,12 +92,6 @@ export class GetListUserDto {
   @IsOptional()
   keyword: string;
 
-  @ApiProperty({ required: false, type: 'enum', enum: UserListDtoType })
-  @Allow()
-  @IsOptional()
-  @IsEnum(UserListDtoType)
-  type: UserListDtoType;
-
   @ApiProperty({ default: 10 })
   @Allow()
   @IsOptional()

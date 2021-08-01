@@ -39,7 +39,7 @@ export class PostController {
   @ApiOperation({ summary: 'Create post' })
   @ApiConsumes('multipart/form-data')
   async createRoom(@CurrentUser() user, @Body() data: CreatPostDto, @UploadedFile() image) {
-    let file = image?.path?.replace("uploads", "http://localhost:3000")
+    let file = image?.path?.replace("uploads", "")
     return await this.postService.createPost(user.id, data, file)
   }
 

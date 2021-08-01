@@ -107,11 +107,8 @@ export class UserService {
     }
 
   }
-  //writing
-  async getUserList(userId: number, data: GetListUserDto) {
-  }
 
-  async getUsersFromDatabase(data: GetListUserDto, userId: number) {
+  async getUsersFromDatabase(userId: number, data: GetListUserDto) {
     const offset = data.offset ? data.offset : 0
     const limit = data.limit ? data.limit : 10
     const usersQuery = this.userRepository.createQueryBuilder('user')

@@ -82,6 +82,15 @@ export class ChatService {
         .innerJoin('conversation', 'conversation', '(conversation.receiverId = user.id) OR (conversation.senderId = user.id)')
         .where(`(conversation.senderId = ${userId}) OR (conversation.receiverId = ${userId})`)
 
+      if (data.keyword && !_.isEmpty(data.keyword)) {
+        query.where(
+          `(lower(name) like :name)`,
+          {
+            name: `%${data.keyword.toLowerCase()}%`,
+          },
+        );
+      }
+
       const total = await query.getCount()
 
       const result = await query

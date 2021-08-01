@@ -55,7 +55,7 @@ export class UserController {
   @Get('')
   @ApiOperation({ summary: 'Get user list' })
   async getListUser(@CurrentUser() user, @Query() data: GetListUserDto) {
-    const result = await this.userService.getUserList(user.id, data);
+    const result = await this.userService.getUsersFromDatabase(user.id, data);
     return new ApiOK(result);
   }
 

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDateString, IsJSON, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { Allow, IsDateString, IsJSON, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class MessageDto {
   @ApiProperty()
@@ -34,4 +34,9 @@ export class GetMessageDto {
   @ApiProperty({ required: false, default: 10 })
   @IsOptional()
   limit: number
+
+  @ApiProperty({ required: false })
+  @Allow()
+  @IsOptional()
+  keyword: string;
 }
