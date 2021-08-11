@@ -30,15 +30,6 @@ export class User {
   @Column({ nullable: true, length: 255 })
   avatar: string;
 
-  @Column({ default: 0 })
-  exp: number
-
-  @Column({ nullable: true })
-  lastLogin: Date
-
-  @Column({ default: false })
-  isFbConnect: boolean
-
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 

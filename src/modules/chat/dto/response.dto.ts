@@ -24,6 +24,5 @@ export class DetailMessageDto {
     delete (this.sender.email)
     delete (this.sender.password)
     delete (this.sender.updatedAt)
-    delete (this.sender.isFbConnect)
   }
 }

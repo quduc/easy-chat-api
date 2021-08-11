@@ -60,7 +60,6 @@ export class UserService {
         .getOne()
       delete (queryUser.password)
       delete (queryUser.updatedAt)
-      delete (queryUser.isFbConnect)
 
       let result = Object.assign({}, queryUser, {
         numberFriend: parseInt(queryFriend[0]?.numberFriend || 0),

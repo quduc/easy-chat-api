@@ -78,13 +78,9 @@ export class AuthService {
         email: result.email,
         name: result.name,
         avatar: result.avatar,
-        isFbConnect: true,
       })
       await this.userRepository.save(newUser)
       user = newUser
-    }
-    if (!user.isFbConnect) {
-      await this.userRepository.update({ id: user.id }, { isFbConnect: true })
     }
 
     try {
