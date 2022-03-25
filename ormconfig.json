@@ -1,6 +1,6 @@
 {
    "type": "mysql",
-   "host": "rockwars-mysql",
+   "host": "apart-admin",
    "port": 3306,
    "database": "rockwars",
    "username": "root",

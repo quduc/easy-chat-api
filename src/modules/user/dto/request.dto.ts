@@ -46,6 +46,11 @@ export class UpdateProfileDto {
   @IsOptional()
   @Allow()
   description: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @Allow()
+  birthday: string;
 }
 
 export class UpdatePasswordUserDto {

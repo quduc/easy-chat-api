@@ -45,11 +45,18 @@ export class PostService {
     const offset = data.offset ? data.offset : 0;
     const limit = data.limit ? data.limit : 10;
     const idUser = data.userId ? data.userId : userId;
+    const keyword = data.keyword ?? ''
+    const category = data.category ?? ''
 
     const query = this.postRepository.createQueryBuilder('post')
       .select('post.id', 'id')
+      .where("post.category = :category", { category })
+      .where("post.title like :keyword", { keyword: `%${keyword}%` })
+      .where("post.description like :keyword", { keyword: `%${keyword}%` })
       .distinct(true)
       .addSelect('post.title', 'title')
+      .addSelect('post.description', 'description')
+      .addSelect('post.category', 'category')
       .addSelect('post.createdAt', 'createdAt')
       .addSelect('post.image', 'image')
       .addSelect('users.id', 'hostId')
@@ -161,6 +168,8 @@ export class PostService {
       .distinct(true)
       .addSelect('post.title', 'title')
       .addSelect('post.image', 'image')
+      .addSelect('post.description', 'description')
+      .addSelect('post.category', 'category')
       .addSelect('users.id', 'hostId')
       .addSelect('users.avatar', 'hostAvatar')
       .addSelect('users.name', 'hostName')

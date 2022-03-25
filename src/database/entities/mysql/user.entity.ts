@@ -30,6 +30,9 @@ export class User {
   @Column({ nullable: true, length: 255 })
   avatar: string;
 
+  @Column({ nullable: true, length: 255 })
+  birthday: string;
+
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 

@@ -70,7 +70,7 @@ export class UserController {
   @UseInterceptors(FileInterceptor('file'))
 
   async updateProfile(@CurrentUser() user, @Body() data: UpdateProfileDto, @UploadedFile() file) {
-    file && this.fileService.validateFile(file)
+    // file && this.fileService.validateFile(file)
     return await this.userService.updateUserProfile(user.id, data, file);
   }
   @Put('password')

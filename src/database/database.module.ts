@@ -11,11 +11,11 @@ import { ConfigService } from '../config/config.service';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         "type": "mysql",
-        "host": configService.dbConfigMySQL.host,
-        "port": configService.dbConfigMySQL.port,
-        "database": configService.dbConfigMySQL.name,
-        "username": configService.dbConfigMySQL.user,
-        "password": configService.dbConfigMySQL.pass,
+        "host": 'localhost',
+        "port": 3306,
+        "database": 'rockwars',
+        "username": 'root',
+        "password": 'root',
         "extra": {
           "charset": "utf8mb4_unicode_ci"
         },
