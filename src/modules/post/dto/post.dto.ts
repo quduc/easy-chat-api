@@ -12,6 +12,14 @@ export class CreatPostDto {
   @ApiProperty({ format: 'binary' })
   @IsOptional()
   image: string
+
+  @ApiProperty()
+  @IsOptional()
+  description: string
+
+  @ApiProperty()
+  @IsOptional()
+  category: string
 }
 
 export class GetPostDto {
@@ -19,9 +27,6 @@ export class GetPostDto {
   @IsOptional()
   userId: number
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  category: string
 
   @ApiProperty({ required: false })
   @IsOptional()

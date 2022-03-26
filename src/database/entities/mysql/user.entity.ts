@@ -6,11 +6,13 @@ import {
   BeforeInsert,
   BeforeUpdate,
   PrimaryGeneratedColumn,
-  Timestamp
+  Timestamp,
+  OneToMany
 } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { AppConfig } from '../../../common/constants/app-config';
 import { Exclude } from 'class-transformer';
+import { Post } from './post.entity';
 
 
 @Entity('users')
@@ -54,4 +56,7 @@ export class User {
   async removePassword() {
     delete (this.password)
   }
+
+  @OneToMany(type => Post, post => post.user)
+  posts: Post[];
 }

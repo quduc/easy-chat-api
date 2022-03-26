@@ -37,10 +37,9 @@ export class UpdateProfileDto {
   @Validate(ValidateUsernameRule)
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ format: 'binary' })
   @IsOptional()
-  @Allow()
-  avatar: string;
+  avatar: string
 
   @ApiProperty()
   @IsOptional()

@@ -31,6 +31,8 @@ export class PostService {
       let post = await this.postRepository.create({
         userId: userId,
         title: data.title,
+        description: data.description,
+        category: data.category,
         image: file || ''
       })
 
@@ -44,29 +46,35 @@ export class PostService {
   async getPost(userId: number, data: GetPostDto) {
     const offset = data.offset ? data.offset : 0;
     const limit = data.limit ? data.limit : 10;
-    const idUser = data.userId ? data.userId : userId;
+    const idUserSearch = data.userId ?? null;
     const keyword = data.keyword ?? ''
-    const category = data.category ?? ''
+
 
     const query = this.postRepository.createQueryBuilder('post')
       .select('post.id', 'id')
-      .where("post.category = :category", { category })
-      .where("post.title like :keyword", { keyword: `%${keyword}%` })
-      .where("post.description like :keyword", { keyword: `%${keyword}%` })
+      .where(`post.category like '%${keyword}%' OR post.title like '%${keyword}%' OR post.description like '%${keyword}%'`)
       .distinct(true)
       .addSelect('post.title', 'title')
       .addSelect('post.description', 'description')
       .addSelect('post.category', 'category')
       .addSelect('post.createdAt', 'createdAt')
       .addSelect('post.image', 'image')
-      .addSelect('users.id', 'hostId')
-      .addSelect('users.avatar', 'avatar')
-      .addSelect('users.name', 'name')
+      .addSelect('post.userId', 'userId')
+      .leftJoinAndSelect("post.user", "user")
+      // .addSelect('users.id', 'hostId')
+      // .addSelect('users.avatar', 'avatar')
+      // .addSelect('users.name', 'name')
       .addSelect(`case when like.postId is not null then true else false end`, 'isLiked')
-      .innerJoin('users', 'users', 'users.id = post.userId')
-      .leftJoin('like', 'like', `like.postId = post.id AND like.isDeleted = 0 AND like.userId = ${idUser}`)
+      // .innerJoin('users', 'users', 'users.id = post.userId')
+      .leftJoin('like', 'like', `like.postId = post.id AND like.isDeleted = 0 AND like.userId = ${userId}`)
       .leftJoin('comment', 'comment', 'comment.postId = post.id')
       .orderBy('post.createdAt', 'DESC')
+
+
+    console.log({ userId })
+    if (idUserSearch) {
+      query.innerJoin('users', 'users', 'users.id = post.userId')
+    }
 
     const result = await query.offset(offset)
       .limit(limit)
@@ -170,11 +178,12 @@ export class PostService {
       .addSelect('post.image', 'image')
       .addSelect('post.description', 'description')
       .addSelect('post.category', 'category')
-      .addSelect('users.id', 'hostId')
-      .addSelect('users.avatar', 'hostAvatar')
-      .addSelect('users.name', 'hostName')
+      // .addSelect('users.id', 'hostId')
+      // .addSelect('users.avatar', 'hostAvatar')
+      // .addSelect('users.name', 'hostName')
+      .leftJoinAndSelect("post.user", "user")
       .addSelect(`case when like.postId is not null then true else false end`, 'isLiked')
-      .innerJoin('users', 'users', 'users.id = post.userId')
+      // .innerJoin('users', 'users', 'users.id = post.userId')
       .leftJoin('like', 'like', `like.postId = post.id AND like.isDeleted = 0 AND like.userId = ${userId}`)
       .where(`post.id = ${data.postId}`)
       .getRawMany()

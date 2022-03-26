@@ -67,8 +67,8 @@ export class UserController {
 
   @Put('profile')
   @ApiOperation({ summary: 'Update user profile' })
-  @UseInterceptors(FileInterceptor('file'))
-
+  @UseInterceptors(FileInterceptor('image', storage))
+  @ApiConsumes('multipart/form-data')
   async updateProfile(@CurrentUser() user, @Body() data: UpdateProfileDto, @UploadedFile() file) {
     // file && this.fileService.validateFile(file)
     return await this.userService.updateUserProfile(user.id, data, file);
