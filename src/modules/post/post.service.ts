@@ -53,7 +53,13 @@ export class PostService {
     const query = this.postRepository.createQueryBuilder('post')
       .select('post.id', 'id')
       .where(`post.category like '%${keyword}%' OR post.title like '%${keyword}%' OR post.description like '%${keyword}%'`)
-      .distinct(true)
+
+
+
+    if (idUserSearch) {
+      query.where(`post.userId = '${idUserSearch}'`)
+    }
+    query.distinct(true)
       .addSelect('post.title', 'title')
       .addSelect('post.description', 'description')
       .addSelect('post.category', 'category')
@@ -69,12 +75,6 @@ export class PostService {
       .leftJoin('like', 'like', `like.postId = post.id AND like.isDeleted = 0 AND like.userId = ${userId}`)
       .leftJoin('comment', 'comment', 'comment.postId = post.id')
       .orderBy('post.createdAt', 'DESC')
-
-
-    console.log({ userId })
-    if (idUserSearch) {
-      query.innerJoin('users', 'users', 'users.id = post.userId')
-    }
 
     const result = await query.offset(offset)
       .limit(limit)

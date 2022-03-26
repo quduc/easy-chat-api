@@ -142,7 +142,7 @@ export class FriendService {
       if (checkRequestReceived.isDeleted === true) throw new ApiError('USER_BLOCKED', 'Cannot send your request.')
     }
 
-    //check if accepted 
+    //check if accepted
     if ((checkRequestSent && checkRequestSent.status === FriendStatus.FRIEND) || (checkRequestReceived && checkRequestReceived.status === FriendStatus.FRIEND)) {
       throw new ApiError('USER_BEING_FRIEND', 'Already friend.')
     }
@@ -321,8 +321,8 @@ export class FriendService {
     sentRequest.isFollowed = !sentRequest.isFollowed
     if (sentRequest.isFollowed) {
       this.notificationService.sendNotifications(userId, [{
-        body: `${cacheUser.name} followed you.`,
-        title: `${cacheUser.name} followed you.`,
+        body: `${cacheUser.name} đã theo dõi bạn.`,
+        title: `${cacheUser.name} đã theo dõi bạn.`,
         type: NotificationType.FOLLOWING_INFO,
         userId: friend.id,
         senderId: cacheUser.id,
