@@ -10,6 +10,7 @@ import {
   Query,
   Req,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -32,11 +33,10 @@ import path = require('path');
 
 export const storage = {
   storage: diskStorage({
-    destination: './uploads/profileimages',
+    destination: './uploads/user',
     filename: (req, file, cb) => {
       const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
       const extension: string = path.parse(file.originalname).ext;
-
       cb(null, `${filename}${extension}`)
     }
   })
@@ -65,12 +65,12 @@ export class UserController {
     return await this.userService.getUserProfile(user.id, data);
   }
 
-  @Put('profile')
-  @ApiOperation({ summary: 'Update user profile' })
+  @Post('profile')
   @UseInterceptors(FileInterceptor('image', storage))
+  @ApiOperation({ summary: 'Update user profile' })
   @ApiConsumes('multipart/form-data')
-  async updateProfile(@CurrentUser() user, @Body() data: UpdateProfileDto, @UploadedFile() file) {
-    // file && this.fileService.validateFile(file)
+  async updateProfile(@CurrentUser() user, @Body() data: UpdateProfileDto, @UploadedFile() image) {
+    let file = image?.path?.replace("uploads", "")
     return await this.userService.updateUserProfile(user.id, data, file);
   }
   @Put('password')

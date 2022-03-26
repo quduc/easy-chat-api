@@ -139,27 +139,26 @@ export class UserService {
 
   async updateUserProfile(userId: number, data: UpdateProfileDto, file?) {
     const cacheUser = await this.getUserInfoRedis(userId);
-
     const username = await this.userRepository.findOne({
       name: data.name,
       id: Not(userId),
     });
     if (username)
       throw new ApiError('DUPLICATED_USERNAME', 'MSG_23', { field: 'name' });
-    if (file) {
-      const presignUrl = await this.fileService.generate(cacheUser.id, { name: file.originalname, type: UploadType.COVER })
-      let buffer = file.buffer
-      await this.httpService.put(presignUrl, buffer, {
-        headers: { 'Content-Type': file.mimetype }
-      }).toPromise()
-      data.avatar = this.fileService.getFullPath(presignUrl)
-    }
+    // if (file) {
+    // const presignUrl = await this.fileService.generate(cacheUser.id, { name: file.originalname, type: UploadType.COVER })
+    // let buffer = file.buffer
+    // await this.httpService.put(presignUrl, buffer, {
+    //   headers: { 'Content-Type': file.mimetype }
+    // }).toPromise()
+    // data.avatar = this.fileService.getFullPath(presignUrl)
+    data.image = file
+    // }
     try {
       delete cacheUser.password;
       const newInfo = Object.assign({}, cacheUser, data);
-      this.userRepository.save(newInfo);
-
-      return new ApiOK(newInfo);
+      this.userRepository.save({ ...newInfo, avatar: file });
+      return new ApiOK({ ...newInfo, avatar: file });
     } catch (e) {
       console.log(e);
       throw new ApiError('SYSTEM_ERROR', 'System error', e);

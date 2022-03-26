@@ -39,7 +39,7 @@ export class UpdateProfileDto {
 
   @ApiProperty({ format: 'binary' })
   @IsOptional()
-  avatar: string
+  image: string
 
   @ApiProperty()
   @IsOptional()
